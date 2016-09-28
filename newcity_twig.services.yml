@@ -1,0 +1,6 @@
+services:
+  newcity_twig.twig_extension:
+    arguments: ['@renderer']
+    class: Drupal\newcity_twig\TwigExtension\Extension
+    tags:
+      - { name: twig.extension }
