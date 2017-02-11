@@ -4,7 +4,7 @@ namespace Drupal\newcity_twig\TwigExtension;
 
 use Drupal\Core\Render\Element;
 
-class Extension extends \Twig_Extension {    
+class Extension extends \Twig_Extension {
 
   /**
    * Generates a list of all Twig filters that this extension defines.
@@ -25,7 +25,7 @@ class Extension extends \Twig_Extension {
       // get an alias for an entity
       new \Twig_SimpleFilter('alias', [$this, 'entityAlias']),
       // create a superheading by taking the last word and making it larger
-       new \Twig_SimpleFilter('multilinesuperhead', [$this, 'multilineSuperhead']),
+      new \Twig_SimpleFilter('multilinesuperhead', [$this, 'multilineSuperhead']),
     ];
   }
 
@@ -37,6 +37,8 @@ class Extension extends \Twig_Extension {
     return [
         // just wrap PHP uniqid()
         new \Twig_SimpleFunction('uniqid', [$this, 'uniqid']),
+        // svg injection
+        new \Twig_SimpleFunction('svg', [$this, 'svg'], ['is_safe' => ['html']]),
     ];
   }
 
@@ -118,7 +120,7 @@ class Extension extends \Twig_Extension {
   /**
    * Simplify field values into a manageable array for cycling through tabs, accordion
    * items, carousel slides, etc.
-   * @param  arr $field 
+   * @param  arr $field
    * @return arr        $items
    */
   public function flattenField($field, $internal_index = null) {
@@ -147,8 +149,8 @@ class Extension extends \Twig_Extension {
   /**
    * Smart trim, word count
    * assumes a string that's had tags stripped out
-   *   e.g., field|render|striptags|smarttrim(n) 
-   * @param  arr $field 
+   *   e.g., field|render|striptags|smarttrim(n)
+   * @param  arr $field
    * @return int        $word_count
    */
   public function smartTrim($field, $word_count = 10) {
@@ -169,7 +171,7 @@ class Extension extends \Twig_Extension {
 
   /**
    * Return an alias for an entity
-   * @param  obj $entity 
+   * @param  obj $entity
    * @return str        $alias
    */
   public function entityAlias($entity) {
@@ -178,7 +180,7 @@ class Extension extends \Twig_Extension {
 
   /**
    * Mulitline superheading -- all except for the last word is smaller
-   * @param  obj $entity 
+   * @param  obj $entity
    * @return str        $alias
    */
   public function multilineSuperhead($text) {
@@ -191,5 +193,48 @@ class Extension extends \Twig_Extension {
     $small = '<small>' . implode(' ', array_slice($words, 0, $n - 1)) . '</small> ';
 
     return '<span class="multiline">' . $small . $last . '</span>';
+  }
+  
+  public function svg($filename = null, $opts = array()) {
+    if (is_null($filename)) {
+        return "No SVG specified.";
+    }
+    // figure out the current theme path
+    $theme_dir = \Drupal::theme()->getActiveTheme()->getPath();
+    
+    // for PL, assume SVG directory in pl/public
+    $svg_dir = realpath($theme_dir . '/svg');
+    if ($svg_dir === FALSE) {
+      return "SVG directory not found.";
+    }
+    if (strpos($filename, '.svg')===FALSE) {
+      $filename .= '.svg';
+    }
+    $fn = $svg_dir . '/' . $filename;
+    if (!file_exists($fn)) {
+      return "SVG file not found.";
+    }
+    
+    $xml = simplexml_load_file($fn);
+    if ($xml === FALSE) {
+      return "Unable to read SVG";
+    }
+    
+    $dom = dom_import_simplexml($xml);
+    if (!$dom) {
+      return "Unable to convert XML to DOM";
+    }
+    
+    // manipulate the output
+    foreach ($opts as $k => $v) {
+      $dom->setAttribute($k, $v);
+    }
+    
+    // spit out the svg tag
+    $output = new \DOMDocument();
+    $cloned = $dom->cloneNode(TRUE);
+    $output->appendChild($output->importNode($cloned, TRUE));
+    
+    return $output->saveHTML();
   }
 }
