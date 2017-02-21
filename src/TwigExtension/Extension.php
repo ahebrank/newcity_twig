@@ -3,6 +3,7 @@
 namespace Drupal\newcity_twig\TwigExtension;
 
 use Drupal\Core\Render\Element;
+use \Twig_Environment;
 
 class Extension extends \Twig_Extension {
 
@@ -39,6 +40,9 @@ class Extension extends \Twig_Extension {
         new \Twig_SimpleFunction('uniqid', [$this, 'uniqid']),
         // svg injection
         new \Twig_SimpleFunction('svg', [$this, 'svg'], ['is_safe' => ['html']]),
+        // xdebug breakpoint (based on https://github.com/ajgarlag/AjglBreakpointTwigExtension)
+        new \Twig_SimpleFunction('xdebug', [$this, 'setBreakpoint'], ['needs_environment' => true, 'needs_context' => true]),
+
     ];
   }
 
@@ -237,4 +241,13 @@ class Extension extends \Twig_Extension {
     
     return $output->saveHTML();
   }
+
+  public function setBreakpoint(Twig_Environment $environment, $context)
+  {
+    if (function_exists('xdebug_break')) {
+      $arguments = array_slice(func_get_args(), 2);
+      xdebug_break();
+    }
+  }
+  
 }
