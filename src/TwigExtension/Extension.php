@@ -3,6 +3,7 @@
 namespace Drupal\newcity_twig\TwigExtension;
 
 use Drupal\Core\Render\Element;
+use Drupal\taxonomy\Entity\Term;
 use \Twig_Environment;
 
 class Extension extends \Twig_Extension {
