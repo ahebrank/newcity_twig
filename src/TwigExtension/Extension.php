@@ -27,6 +27,12 @@ class Extension extends \Twig_Extension {
       new \Twig_SimpleFilter('alias', [$this, 'entityAlias']),
       // create a superheading by taking the last word and making it larger
       new \Twig_SimpleFilter('multilinesuperhead', [$this, 'multilineSuperhead']),
+      // render a text field from the fielditem
+      new \Twig_SimpleFilter('text_format', [$this, 'textFormat']),
+      // override a view with custom referenced content
+      new \Twig_SimpleFilter('override_eva_with', [$this, 'overrideEva']),
+      // check if a view has any content
+      new \Twig_SimpleFilter('has_rows', [$this, 'viewHasRows']),
     ];
   }
 
@@ -42,7 +48,10 @@ class Extension extends \Twig_Extension {
         new \Twig_SimpleFunction('svg', [$this, 'svg'], ['is_safe' => ['html']]),
         // xdebug breakpoint (based on https://github.com/ajgarlag/AjglBreakpointTwigExtension)
         new \Twig_SimpleFunction('xdebug', [$this, 'setBreakpoint'], ['needs_environment' => true, 'needs_context' => true]),
-
+        // load a term from a tid
+        new \Twig_SimpleFunction('term_lookup', [$this, 'termLookup']),
+        // uri -> url
+        new \Twig_SimpleFunction('uritourl', [$this, 'uriToUrl']),
     ];
   }
 
@@ -199,6 +208,69 @@ class Extension extends \Twig_Extension {
     return '<span class="multiline">' . $small . $last . '</span>';
   }
   
+  /**
+   * override EVA output with featured content
+   * useful for e.g., prepending featured content on a list
+   * content should use rendered output for both
+   * @param  [type] $eva     [description]
+   * @param  [type] $content [description]
+   * @return [type]          [description]
+   */
+  public function overrideEva($eva, $content) {
+    $override_count = count($content['#items']);
+    // why is this like this? grouping?
+    $eva_rows = $eva[0]['#rows'][0]['#rows'];
+    $eva_count = count($eva_rows);
+
+    if ($override_count >= $eva_count) {
+      // just do a replace
+      $eva[0]['#rows'][0]['#rows'] = $content;
+      return $eva;
+    }
+
+    $injected = [];
+    for ($i = 0; $i < $override_count; $i++) {
+      $injected[] = $content[$i];
+    }
+
+    $eva[0]['#rows'][0]['#rows'] = array_merge(
+      $injected,
+      array_slice($eva_rows, 0, $eva_count - $override_count)
+    );
+
+    return $eva;
+  }
+
+  /**
+   * render a long text field
+   * @param  [type] $field [description]
+   * @return [type]        [description]
+   */
+  public function textFormat($field) {
+    $output = [];
+    foreach ($field as $f) {
+      $fa = $f->toArray();
+      // this is borrowed from https://api.drupal.org/api/drupal/core%21modules%21views%21src%21Plugin%21views%21area%21Text.php/function/Text%3A%3Arender/8.2.x
+      $format = isset($fa['format']) ? $fa['format'] : 'plain';
+      if (isset($fa['value'])) {
+        $output[] = array(
+          '#type' => 'processed_text',
+          '#text' => $fa['value'],
+          '#format' => $format,
+        );
+      }
+    }
+    return $output;
+  }
+  
+  public function viewHasRows($view) {
+    $view = $this->removeHtmlComments($view);
+    $dom = new \DOMDocument;
+    $dom->loadHTML($view);
+    $divs = $dom->getElementsByTagName('div');
+    return ($divs->length > 1);
+  }
+  
   public function svg($filename = null, $opts = array()) {
     if (is_null($filename)) {
         return "No SVG specified.";
@@ -248,6 +320,20 @@ class Extension extends \Twig_Extension {
       $arguments = array_slice(func_get_args(), 2);
       xdebug_break();
     }
+  }
+  
+  // return a term from a tid
+  public function termLookup($tid) {
+    if (is_array($tid) && count($tid) == 1) {
+      $tid = array_shift($tid);
+    }
+    return Term::load($tid);
+  }
+  
+  // convert a URI to a URL
+  public function uriToUrl($uri) {
+    $url = \Drupal\Core\Url::fromUri($uri);
+    return $url->toString();
   }
   
 }
