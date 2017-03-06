@@ -289,7 +289,7 @@ class Extension extends \Twig_Extension {
     }
     $fn = $svg_dir . '/' . $filename;
     if (!file_exists($fn)) {
-      return "SVG file not found.";
+      return "SVG file " . $filename . " not found.";
     }
     
     $xml = simplexml_load_file($fn);
