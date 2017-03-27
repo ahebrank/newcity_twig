@@ -22,6 +22,10 @@ class Extension extends \Twig_Extension {
       // pull out / flatten field elements for use in a single template
       // useful for tabs, accordions, sliders
       new \Twig_SimpleFilter('flattenfield', [$this, 'flattenField']),
+       // retheme a field value
+      new \Twig_SimpleFilter('retheme', [$this, 'reTheme']),
+      // retheme a field value
+      new \Twig_SimpleFilter('refilter', [$this, 'reFilter']),
       // smart truncate
       new \Twig_SimpleFilter('smarttrim', [$this, 'smartTrim']),
       // get an alias for an entity
@@ -85,7 +89,7 @@ class Extension extends \Twig_Extension {
     foreach ($mixed as $i => $v) {
       if (is_array($v)) {
         foreach ($v as $j => $vprime) {
-          $output[$i][$j] = array_keys($vprime);
+          $output[$i][$j] = (is_scalar($vprime))? $vprime : (is_array($vprime)? array_keys($vprime) : get_class($vprime));
         }
       }
       elseif (is_string($v) || is_bool($v)) {
@@ -208,6 +212,37 @@ class Extension extends \Twig_Extension {
 
     return '<span class="multiline">' . $small . $last . '</span>';
   }
+
+  /**
+   * Take a field value and a theme function and reapply
+   * @param  arr $field 
+   * @return arr        $render array
+   */
+  public function reTheme($field, $function) {
+    $theme =[
+      '#theme' => $function,
+    ];
+    foreach ($field as $k => $v) {
+      $theme['#' . $k] = $v;
+    }
+    return drupal_render($theme);
+  }
+
+  /**
+   * Take a formatted text field and retheme
+   * @param  arr $field 
+   * @return arr        $render array
+   */
+  public function reFilter($field) {
+    $theme =[
+      '#type' => 'processed_text',
+      '#text' => $field->value,
+      '#format' => $field->format,
+    ];
+    return drupal_render($theme);
+	
+  }
+
   
   /**
    * override EVA output with featured content
@@ -336,5 +371,7 @@ class Extension extends \Twig_Extension {
     $url = \Drupal\Core\Url::fromUri($uri);
     return $url->toString();
   }
+
+
   
 }
