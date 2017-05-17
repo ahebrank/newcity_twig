@@ -1,0 +1,48 @@
+<?php
+
+use Drupal\Core\Render\Markup;
+
+/**
+ * @file
+ * Primary module hooks for NewCity Twig test module.
+ */
+
+/**
+ * Implements hook_page_bottom().
+ */
+function newcity_twig_test_page_bottom(array &$page_bottom) {
+  $theme = $theme = \Drupal::theme()->getActiveTheme()->getName();
+  if ($theme == 'bartik') {
+    // inject the test output in the page template
+    $page_bottom['newcity_twig_test']['#theme'] = 'newcity_twig_test';
+  }
+}
+
+/**
+ * Implements hook_theme().
+ */
+function newcity_twig_test_theme() {
+  return [
+    'newcity_twig_test' => [
+      'variables' => []
+    ],
+  ];
+}
+
+function newcity_twig_test_theme_registry_alter(&$theme_registry) {
+  $theme_registry['node']['path'] = drupal_get_path('module', 'newcity_twig_test') . '/templates';
+}
+
+/**
+ * Prepares variables for newcity-twig-test template.
+ */
+function template_preprocess_newcity_twig_test(&$vars) {
+  $vars['node'] = Drupal::routeMatch()->getParameter('node');
+  $vars['html_content'] = Markup::create('<!-- comment start -->
+      <span>Lorem ipsum</span><!-- comment end -->');
+  $vars['lorem_long'] = 'Laboris minim in pariatur velit occaecat enim enim cupidatat labore labore. Fugiat minim eiusmod id culpa ullamco. Id qui do sunt anim voluptate fugiat aliqua eiusmod minim reprehenderit culpa dolore. Veniam ullamco magna dolor enim fugiat dolor quis veniam incididunt nisi Lorem. Dolore reprehenderit aliquip eiusmod dolore ea cillum. Occaecat minim reprehenderit Lorem laboris cillum irure dolore adipisicing.';
+  $vars['article_view'] = views_embed_view('articles');
+  $vars['page_view'] = views_embed_view('pages');
+}
+
+

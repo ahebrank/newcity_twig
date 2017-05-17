@@ -1,6 +1,11 @@
 services:
-  newcity_twig.twig_extension:
+  newcity_twig.good_extension:
     arguments: ['@renderer']
-    class: Drupal\newcity_twig\TwigExtension\Extension
+    class: Drupal\newcity_twig\TwigExtension\GoodExtension
+    tags:
+      - { name: twig.extension }
+  newcity_twig.ugly_extension:
+    arguments: ['@renderer']
+    class: Drupal\newcity_twig\TwigExtension\UglyExtension
     tags:
       - { name: twig.extension }

@@ -1,0 +1,19 @@
+<style>
+  .nt-test > div {
+    margin: 15px;
+    padding: 10px;
+    outline: solid 2px #bada55;
+    color: white;
+  }
+</style>
+<div class="nt-test">
+  <div class="nt-nocomment">{{ html_content|nocomment|raw }}</div>
+  <div class="nt-resize-image-url">{{ 'public://dog.jpg'|resize('thumbnail') }}</div>
+  <div class="nt-smarttrim">{{ lorem_long|smarttrim(10) }}</div>
+  <div class="nt-alias">{{ node|alias }}</div>
+  <div class="nt-hasrows">{{ article_view|render|has_rows }}</div>
+  <div class="nt-hasnorows">{{ page_view|render|has_rows }}</div>
+  <div class="nt-uniqid">{{ uniqid() }}</div>  
+  <div class="nt-svg">{{ svg('logo', {'dir': ''}) }}</div>
+  <div class="nt-rendertermlookup">{{ render_term_lookup('tags', 'field_color', 'blue') }}
+</div>
