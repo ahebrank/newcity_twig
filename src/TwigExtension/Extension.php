@@ -57,6 +57,8 @@ class Extension extends \Twig_Extension {
         new \Twig_SimpleFunction('term_lookup', [$this, 'termLookup']),
         // uri -> url
         new \Twig_SimpleFunction('uritourl', [$this, 'uriToUrl']),
+        // return a rendered term based on a field in the term
+        new Twig_SimpleFunction('render_term_lookup', [$this, 'renderTermLookup'], ['is_safe' => ['html']]),
     ];
   }
 
@@ -370,6 +372,23 @@ class Extension extends \Twig_Extension {
   public function uriToUrl($uri) {
     $url = \Drupal\Core\Url::fromUri($uri);
     return $url->toString();
+  }
+
+  /**
+   * lookup and render a term in $taxonomy
+   * by matching $needle against $field values
+   */
+  public function renderTermLookup($taxonomy, $field, $needle) {
+    $query = \Drupal::service('entity.query')
+        ->get('taxonomy_term')
+        ->condition('vid', $taxonomy)
+        ->condition($field, $needle);
+    $tids = $query->execute();
+    if ($tids) {
+        $term = Term::load(array_shift($tids));
+        $view_builder = \Drupal::service('entity_type.manager')->getViewBuilder('taxonomy_term');
+        return $view_builder->view($term);
+    }
   }
 
 
