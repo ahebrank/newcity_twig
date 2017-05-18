@@ -11,11 +11,7 @@ use Drupal\Core\Render\Markup;
  * Implements hook_page_bottom().
  */
 function newcity_twig_test_page_bottom(array &$page_bottom) {
-  $theme = $theme = \Drupal::theme()->getActiveTheme()->getName();
-  if ($theme == 'bartik') {
-    // inject the test output in the page template
-    $page_bottom['newcity_twig_test']['#theme'] = 'newcity_twig_test';
-  }
+  $page_bottom['newcity_twig_test']['#theme'] = 'newcity_twig_test';
 }
 
 /**

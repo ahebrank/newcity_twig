@@ -3,15 +3,18 @@
     margin: 15px;
     padding: 10px;
     outline: solid 2px #bada55;
-    color: white;
   }
 </style>
 <div class="nt-test">
+  {{ html_content }}
   <div class="nt-nocomment">{{ html_content|nocomment|raw }}</div>
   <div class="nt-resize-image-url">{{ 'public://dog.jpg'|resize('thumbnail') }}</div>
+  <div>{{ lorem_long }}</div>
   <div class="nt-smarttrim">{{ lorem_long|smarttrim(10) }}</div>
   <div class="nt-alias">{{ node|alias }}</div>
+  <div>{{ article_view }}</div>
   <div class="nt-hasrows">{{ article_view|render|has_rows }}</div>
+  <div>{{ page_view }}</div>
   <div class="nt-hasnorows">{{ page_view|render|has_rows }}</div>
   <div class="nt-uniqid">{{ uniqid() }}</div>  
   <div class="nt-svg">{{ svg('logo', {'dir': ''}) }}</div>

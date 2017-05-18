@@ -77,7 +77,6 @@
     'clearfix',
   ]
 %}
-{{ attach_library('classy/node') }}
 <article{{ attributes.addClass(classes) }}>
   <header>
     {{ title_prefix }}
@@ -98,7 +97,7 @@
     {% endif %}
   </header>
   <div{{ content_attributes.addClass('node__content', 'clearfix') }}>
-    {{ content|without('field_image') }}
+    {{ content }}
     <div class="nt-resize-image-field">
         {{ content.field_image|resize('thumbnail') }}
     </div>

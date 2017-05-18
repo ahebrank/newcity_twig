@@ -144,12 +144,13 @@ class GoodExtension extends \Twig_Extension {
    * check if a rendered view has rows (really, just looks for divs)
    * @return bool
    */
-  public function viewHasRows($view) {
+  public function viewHasRows($view, $class = 'views-row') {
     $view = $this->removeHtmlComments($view);
     $dom = new \DOMDocument;
     $dom->loadHTML($view);
-    $divs = $dom->getElementsByTagName('div');
-    return ($divs->length > 1);
+    $finder = new \DomXPath($dom);
+    $rows = $finder->query("//*[contains(@class, '$class')]");
+    return ($rows->length > 1);
   }
 
   /**
