@@ -21,6 +21,7 @@ class NewcityTwigTest extends BrowserTestBase {
     'views',
     'node',
     'image',
+    'taxonomy',
   ];
 
   /**
@@ -59,7 +60,7 @@ class NewcityTwigTest extends BrowserTestBase {
 
     // Test "thumbnail" in URL.
     $xpath = '//div[@class = "nt-resize-image-url"]';
-    $this->assertByXpath($xpath . '[contains(text(), "styles/thumbnail/public/dog.jpg"]');
+    $this->assertByXpath($xpath . '[contains(text(), "styles/thumbnail/public") and contains(text(), "dog.jpg")]');
 
     // Test sentence trim.
     $xpath = '//div[@class = "nt-smarttrim"]';
@@ -91,7 +92,7 @@ class NewcityTwigTest extends BrowserTestBase {
   
     // Test image thumbnail
     $xpath = '//div[@class = "nt-resize-image-field"]';
-    $this->assertByXpath($xpath  . '/*[descendant::img[contains(@href, "styles/thumbnail/public/dog.jpg")]]');
+    $this->assertByXpath($xpath  . '/*[descendant::img[contains(@href, "styles/thumbnail/public") and contains(@href, "dog.jpg")]]');
   
   }
 
