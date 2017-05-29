@@ -150,7 +150,7 @@ class GoodExtension extends \Twig_Extension {
     $dom->loadHTML($view);
     $finder = new \DomXPath($dom);
     $rows = $finder->query("//*[contains(@class, '$class')]");
-    return ($rows->length > 1);
+    return ($rows->length >= 1);
   }
 
   /**
