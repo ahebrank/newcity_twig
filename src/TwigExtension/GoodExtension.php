@@ -31,6 +31,8 @@ class GoodExtension extends \Twig_Extension {
       new \Twig_SimpleFilter('alias', [$this, 'entityAlias']),
       // check if a view has any content
       new \Twig_SimpleFilter('has_rows', [$this, 'viewHasRows']),
+      // remove empty items from an array
+      new \Twig_SimpleFunction('array_filter', 'array_filter'),
     ];
   }
 
