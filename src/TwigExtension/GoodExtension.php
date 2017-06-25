@@ -54,6 +54,8 @@ class GoodExtension extends \Twig_Extension {
         new \Twig_SimpleFunction('term_lookup', [$this, 'termLookup']),
         // return a rendered term based on a field in the term
         new \Twig_SimpleFunction('render_term_lookup', [$this, 'renderTermLookup'], ['is_safe' => ['html']]),
+        // return an alias for a language
+        new \Twig_SimpleFunction('lang_alias', [$this, 'langAlias']),
     ];
   }
 
@@ -257,6 +259,14 @@ class GoodExtension extends \Twig_Extension {
         return $view_builder->view($term);
     }
   }
+
+  /** 
+   * from a system path 
+   * return an alias for a particular language
+   */
+   public function langAlias($system_path, $lang = 'en') {
+     return \Drupal::service('path.alias_manager')->getAliasByPath($system_path, $lang);
+   }
 
 
   
