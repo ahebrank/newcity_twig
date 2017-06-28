@@ -185,6 +185,7 @@ class GoodExtension extends \Twig_Extension {
     if (strpos($filename, '.svg')===FALSE) {
       $filename .= '.svg';
     }
+    $filename = basename($filename);
     $fn = $svg_dir . '/' . $filename;
     if (!file_exists($fn)) {
       return "SVG file " . $filename . " not found.";
