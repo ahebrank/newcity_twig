@@ -241,6 +241,19 @@ class GoodExtension extends \Twig_Extension {
     if (is_array($tid) && count($tid) == 1) {
       $tid = array_shift($tid);
     }
+    if (!is_numeric($tid)) {
+      // look up by label
+      $query = \Drupal::service('entity.query')
+        ->get('taxonomy_term')
+        ->condition('name', $tid);
+      $tids = $query->execute();
+      if (count($tids) > 0) {
+        $tid = array_shift($tids);
+      }
+      else {
+        $tid = null;
+      }
+    }
     return Term::load($tid);
   }
   
