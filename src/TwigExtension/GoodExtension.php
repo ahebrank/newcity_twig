@@ -33,6 +33,8 @@ class GoodExtension extends \Twig_Extension {
       new \Twig_SimpleFilter('has_rows', [$this, 'viewHasRows']),
       // remove empty items from an array
       new \Twig_SimpleFilter('array_filter', 'array_filter'),
+      // run the builder on an entity
+      new \Twig_SimpleFilter('entity_view', [$this, 'entityView']),
     ];
   }
 
@@ -155,6 +157,15 @@ class GoodExtension extends \Twig_Extension {
     $finder = new \DomXPath($dom);
     $rows = $finder->query("//*[contains(@class, '$class')]");
     return ($rows->length >= 1);
+  }
+
+  /**
+   * build a render array for an entity
+   * @return a render array
+   */
+  public function entityView($entity, $entity_type, $view_mode = 'full') {
+    $builder = \Drupal::entityTypeManager()->getViewBuilder($entity_type);
+    return $builder->build($builder->view($entity, $view_mode));
   }
 
   /**
