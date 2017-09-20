@@ -152,8 +152,14 @@ class GoodExtension extends \Twig_Extension {
    */
   public function viewHasRows($view, $class = 'views-row') {
     $view = $this->removeHtmlComments($view);
-    $dom = new \DOMDocument;
+    $dom = new \DOMDocument();
+
+    // load HTML but suppress warnings
+    $libxml_previous_state = libxml_use_internal_errors(true);
     $dom->loadHTML($view);
+    libxml_clear_errors();
+    libxml_use_internal_errors($libxml_previous_state);
+
     $finder = new \DomXPath($dom);
     $rows = $finder->query("//*[contains(@class, '$class')]");
     return ($rows->length >= 1);
