@@ -35,6 +35,8 @@ class GoodExtension extends \Twig_Extension {
       new \Twig_SimpleFilter('array_filter', 'array_filter'),
       // run the builder on an entity
       new \Twig_SimpleFilter('entity_view', [$this, 'entityView']),
+      // html_decode_entities
+      new \Twig_SimpleFilter('unescape', [$this, 'unescape']),
     ];
   }
 
@@ -172,6 +174,14 @@ class GoodExtension extends \Twig_Extension {
   public function entityView($entity, $entity_type, $view_mode = 'full') {
     $builder = \Drupal::entityTypeManager()->getViewBuilder($entity_type);
     return $builder->build($builder->view($entity, $view_mode));
+  }
+
+  /**
+   * wrap html_entity_decode
+   * @return str 
+   */
+  public function unescape($value) {
+    return html_entity_decode($value);
   }
 
   /**
