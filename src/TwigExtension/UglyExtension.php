@@ -90,7 +90,7 @@ class UglyExtension extends \Twig_Extension {
 
   /**
    * Take a field value and a theme function and reapply
-   * @param  arr $field 
+   * @param  arr $field
    * @return arr        $render array
    */
   public function reTheme($field, $function) {
@@ -100,12 +100,12 @@ class UglyExtension extends \Twig_Extension {
     foreach ($field as $k => $v) {
       $theme['#' . $k] = $v;
     }
-    return drupal_render($theme);
+    return \Drupal::service('renderer')->render($theme);
   }
 
   /**
    * Take a formatted text field and retheme
-   * @param  arr $field 
+   * @param  arr $field
    * @return arr        $render array
    */
   public function reFilter($field) {
@@ -114,7 +114,7 @@ class UglyExtension extends \Twig_Extension {
       '#text' => $field->value,
       '#format' => $field->format,
     ];
-    return drupal_render($theme);
+    return \Drupal::service('renderer')->render($theme);
   }
 
   /**
@@ -150,7 +150,7 @@ class UglyExtension extends \Twig_Extension {
 
     return '<span class="multiline">' . $small . $last . '</span>';
   }
-  
+
   /**
    * override EVA output with featured content
    * useful for e.g., prepending featured content on a list

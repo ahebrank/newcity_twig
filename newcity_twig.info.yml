@@ -2,4 +2,5 @@ name: NewCity Twig
 type: module
 description: Useful D8 Twig extensions
 core: 8.x
+core_version_requirement: ^8 || ^9
 package: NewCity

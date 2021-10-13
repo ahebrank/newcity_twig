@@ -3,13 +3,17 @@
 namespace Drupal\Tests\newcity_twig\Functional;
 
 use Drupal\Tests\BrowserTestBase;
-use Drupal\taxonomy\Entity\Term; 
+use Drupal\Core\File\FileSystemInterface;
+
 /**
  * A test for Twig extension.
  *
  * @group newcity_twig
  */
 class NewcityTwigTest extends BrowserTestBase {
+
+  // See https://www.drupal.org/node/3083055
+  protected $defaultTheme = 'stable';
 
   /**
    * {@inheritdoc}
@@ -41,13 +45,13 @@ class NewcityTwigTest extends BrowserTestBase {
 
     // copy over the test image and add it to the first node
     $image = file_get_contents(drupal_get_path('module', 'newcity_twig_test') . '/dog.jpg');
-    $file = file_save_data($image, 'public://dog.jpg', FILE_EXISTS_REPLACE);
+    $file = file_save_data($image, 'public://dog.jpg', FileSystemInterface::EXISTS_REPLACE);
 
     // add some articles
     $node1 = $this->createNode(['title' => 'Alpha', 'type' => 'article']);
     $node1->field_image->target_id = $file->id();
     $node1->save();
-    
+
     $this->createNode(['title' => 'Beta', 'type' => 'article']);
     $this->createNode(['title' => 'Gamma', 'type' => 'article']);
 
@@ -98,11 +102,11 @@ class NewcityTwigTest extends BrowserTestBase {
     // Test svg output.
     $xpath = '//div[@class = "nt-rendertermlookup"]';
     $this->assertByXpath($xpath  . '/div[contains(@class, "taxonomy-term")]/*[descendant::a[contains(@href, "/taxonomy/term/2")]]');
-  
+
     // Test image thumbnail
     $xpath = '//div[@class = "nt-resize-image-field"]';
     $this->assertByXpath($xpath  . '/*[descendant::img[contains(@src, "styles/thumbnail/public") and contains(@src, "dog.jpg")]]');
-  
+
   }
 
   /**

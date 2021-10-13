@@ -178,7 +178,7 @@ class GoodExtension extends \Twig_Extension {
 
   /**
    * wrap html_entity_decode
-   * @return str 
+   * @return str
    */
   public function unescape($value) {
     return html_entity_decode($value);
@@ -191,7 +191,7 @@ class GoodExtension extends \Twig_Extension {
   public function uniqid() {
     return uniqid();
   }
-  
+
   /**
    * inject an svg from a theme
    * @return str html
@@ -202,7 +202,7 @@ class GoodExtension extends \Twig_Extension {
     }
     // figure out the current theme path
     $theme_dir = \Drupal::theme()->getActiveTheme()->getPath();
-    
+
     // svg dir defined relative to theme dir
     $dir = isset($opts['dir'])? $opts['dir'] : 'svg';
     $svg_dir = realpath($theme_dir . '/' . $dir);
@@ -217,27 +217,27 @@ class GoodExtension extends \Twig_Extension {
     if (!file_exists($fn)) {
       return "SVG file " . $filename . " not found.";
     }
-    
+
     $xml = simplexml_load_file($fn);
     if ($xml === FALSE) {
       return "Unable to read SVG";
     }
-    
+
     $dom = dom_import_simplexml($xml);
     if (!$dom) {
       return "Unable to convert XML to DOM";
     }
-    
+
     // manipulate the output
     foreach ($opts as $k => $v) {
       $dom->setAttribute($k, $v);
     }
-    
+
     // spit out the svg tag
     $output = new \DOMDocument();
     $cloned = $dom->cloneNode(TRUE);
     $output->appendChild($output->importNode($cloned, TRUE));
-    
+
     return $output->saveHTML();
   }
 
@@ -260,7 +260,7 @@ class GoodExtension extends \Twig_Extension {
     return $url->toString();
   }
 
-  
+
   /**
    * return a full term entity from a tid
    */
@@ -270,8 +270,8 @@ class GoodExtension extends \Twig_Extension {
     }
     if (!is_numeric($tid)) {
       // look up by label
-      $query = \Drupal::service('entity.query')
-        ->get('taxonomy_term')
+      $query = \Drupal::entityTypeManager()->getStorage('taxonomy_term')
+        ->getQuery()
         ->condition('name', $tid);
       $tids = $query->execute();
       if (count($tids) > 0) {
@@ -283,14 +283,14 @@ class GoodExtension extends \Twig_Extension {
     }
     return Term::load($tid);
   }
-  
+
   /**
    * lookup and render a term in $taxonomy
    * by matching $needle against $field values
    */
   public function renderTermLookup($taxonomy, $field, $needle) {
-    $query = \Drupal::service('entity.query')
-        ->get('taxonomy_term')
+    $query = \Drupal::entityTypeManager()->getStorage('taxonomy_term')
+        ->getQuery()
         ->condition('vid', $taxonomy)
         ->condition($field, $needle);
     $tids = $query->execute();
@@ -301,14 +301,14 @@ class GoodExtension extends \Twig_Extension {
     }
   }
 
-  /** 
-   * from a system path 
+  /**
+   * from a system path
    * return an alias for a particular language
    */
    public function langAlias($system_path, $lang = 'en') {
-     return \Drupal::service('path.alias_manager')->getAliasByPath($system_path, $lang);
+     return \Drupal::service('path_alias.manager')->getAliasByPath($system_path, $lang);
    }
 
 
-  
+
 }

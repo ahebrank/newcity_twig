@@ -1,2 +1,0 @@
-#!/bin/bash
-docker exec -it module_testing composer "$@"

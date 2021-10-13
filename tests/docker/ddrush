@@ -1,2 +1,0 @@
-#!/bin/bash
-docker exec -i module_testing vendor/drush/drush/drush "$@"
