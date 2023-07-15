@@ -18,7 +18,7 @@ class NewcityTwigTest extends BrowserTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = [
+  protected static $modules = [
     'newcity_twig',
     'newcity_twig_test',
     'pathauto',
@@ -40,12 +40,12 @@ class NewcityTwigTest extends BrowserTestBase {
   /**
    * {@inheritdoc}
    */
-  public function setUp() {
+  public function setUp(): void {
     parent::setUp();
 
     // copy over the test image and add it to the first node
-    $image = file_get_contents(drupal_get_path('module', 'newcity_twig_test') . '/dog.jpg');
-    $file = file_save_data($image, 'public://dog.jpg', FileSystemInterface::EXISTS_REPLACE);
+    $image = file_get_contents(\Drupal::service('extension.list.module')->getPath('newcity_twig_test') . '/dog.jpg');
+    $file = \Drupal::service('file.repository')->writeData($image, 'public://dog.jpg', FileSystemInterface::EXISTS_REPLACE);
 
     // add some articles
     $node1 = $this->createNode(['title' => 'Alpha', 'type' => 'article']);

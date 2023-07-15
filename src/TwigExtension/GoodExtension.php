@@ -5,9 +5,12 @@ namespace Drupal\newcity_twig\TwigExtension;
 use Drupal\Core\Render\Element;
 use Drupal\taxonomy\Entity\Term;
 use Drupal\image\Entity\ImageStyle;
-use \Twig_Environment;
+use Twig\Environment;
+use Twig\Extension\AbstractExtension;
+use Twig\TwigFilter;
+use Twig\TwigFunction;
 
-class GoodExtension extends \Twig_Extension {
+class GoodExtension extends AbstractExtension {
 
   /**
    * Gets a unique identifier for this Twig extension.
@@ -22,21 +25,21 @@ class GoodExtension extends \Twig_Extension {
   public function getFilters() {
     return [
       // remove HTML comments from markup
-      new \Twig_SimpleFilter('nocomment', [$this, 'removeHtmlComments']),
+      new TwigFilter('nocomment', [$this, 'removeHtmlComments']),
       // an alternate image style (from https://www.drupal.org/files/issues/twig_image_style-2361299-31.patch)
-      new \Twig_SimpleFilter('resize', [$this, 'getImageFieldWithStyle']),
+      new TwigFilter('resize', [$this, 'getImageFieldWithStyle']),
       // smart truncate
-      new \Twig_SimpleFilter('smarttrim', [$this, 'smartTrim']),
+      new TwigFilter('smarttrim', [$this, 'smartTrim']),
       // get an alias for an entity
-      new \Twig_SimpleFilter('alias', [$this, 'entityAlias']),
+      new TwigFilter('alias', [$this, 'entityAlias']),
       // check if a view has any content
-      new \Twig_SimpleFilter('has_rows', [$this, 'viewHasRows']),
+      new TwigFilter('has_rows', [$this, 'viewHasRows']),
       // remove empty items from an array
-      new \Twig_SimpleFilter('array_filter', 'array_filter'),
+      new TwigFilter('array_filter', 'array_filter'),
       // run the builder on an entity
-      new \Twig_SimpleFilter('entity_view', [$this, 'entityView']),
+      new TwigFilter('entity_view', [$this, 'entityView']),
       // html_decode_entities
-      new \Twig_SimpleFilter('unescape', [$this, 'unescape']),
+      new TwigFilter('unescape', [$this, 'unescape']),
     ];
   }
 
@@ -47,19 +50,19 @@ class GoodExtension extends \Twig_Extension {
   {
     return [
         // just wrap PHP uniqid()
-        new \Twig_SimpleFunction('uniqid', [$this, 'uniqid']),
+        new TwigFunction('uniqid', [$this, 'uniqid']),
         // svg injection
-        new \Twig_SimpleFunction('svg', [$this, 'svg'], ['is_safe' => ['html']]),
+        new TwigFunction('svg', [$this, 'svg'], ['is_safe' => ['html']]),
         // xdebug breakpoint (based on https://github.com/ajgarlag/AjglBreakpointTwigExtension)
-        new \Twig_SimpleFunction('xdebug', [$this, 'setBreakpoint'], ['needs_environment' => true, 'needs_context' => true]),
+        new TwigFunction('xdebug', [$this, 'setBreakpoint'], ['needs_environment' => true, 'needs_context' => true]),
         // uri -> url
-        new \Twig_SimpleFunction('uritourl', [$this, 'uriToUrl']),
+        new TwigFunction('uritourl', [$this, 'uriToUrl']),
         // load a term from a tid
-        new \Twig_SimpleFunction('term_lookup', [$this, 'termLookup']),
+        new TwigFunction('term_lookup', [$this, 'termLookup']),
         // return a rendered term based on a field in the term
-        new \Twig_SimpleFunction('render_term_lookup', [$this, 'renderTermLookup'], ['is_safe' => ['html']]),
+        new TwigFunction('render_term_lookup', [$this, 'renderTermLookup'], ['is_safe' => ['html']]),
         // return an alias for a language
-        new \Twig_SimpleFunction('lang_alias', [$this, 'langAlias']),
+        new TwigFunction('lang_alias', [$this, 'langAlias']),
     ];
   }
 
@@ -79,17 +82,17 @@ class GoodExtension extends \Twig_Extension {
 
 
    /**
-   * Function that returns a renderable array of an image field with a given
-   * image style.
-   *
-   * @param $field
-   *   Renderable array of a field or maybe a URL
-   * @param $style
-   *   an image style.
-   *
-   * @return mixed
-   *   a renderable array or NULL if there is no valid input.
-   */
+    * Function that returns a renderable array of an image field with a given
+    * image style.
+    *
+    * @param $field
+    *   Renderable array of a field or maybe a URL
+    * @param $style
+    *   an image style.
+    *
+    * @return mixed
+    *   a renderable array or NULL if there is no valid input.
+    */
   public function getImageFieldWithStyle($field, $style) {
     if (isset($field['#field_type']) && $field['#field_type'] == 'image') {
       $element_children = Element::children($field, TRUE);
@@ -244,7 +247,7 @@ class GoodExtension extends \Twig_Extension {
   /**
    * set an xdebug breakpoint (if the extension is available)
    */
-  public function setBreakpoint(Twig_Environment $environment, $context)
+  public function setBreakpoint(Environment $environment, $context)
   {
     if (function_exists('xdebug_break')) {
       $arguments = array_slice(func_get_args(), 2);
@@ -272,7 +275,8 @@ class GoodExtension extends \Twig_Extension {
       // look up by label
       $query = \Drupal::entityTypeManager()->getStorage('taxonomy_term')
         ->getQuery()
-        ->condition('name', $tid);
+        ->condition('name', $tid)
+        ->accessCheck(TRUE); 
       $tids = $query->execute();
       if (count($tids) > 0) {
         $tid = array_shift($tids);

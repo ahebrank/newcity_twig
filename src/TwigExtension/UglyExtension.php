@@ -4,7 +4,10 @@
 
 namespace Drupal\newcity_twig\TwigExtension;
 
-class UglyExtension extends \Twig_Extension {
+use Twig\Extension\AbstractExtension;
+use Twig\TwigFilter;
+
+class UglyExtension extends AbstractExtension {
 
   /**
    * Gets a unique identifier for this Twig extension.
@@ -20,20 +23,20 @@ class UglyExtension extends \Twig_Extension {
   public function getFilters() {
     return [
       // try to list only the first level of an array tree
-      new \Twig_SimpleFilter('firstlevel', [$this, 'traverseFirstLevel']),
+      new TwigFilter('firstlevel', [$this, 'traverseFirstLevel']),
       // pull out / flatten field elements for use in a single template
       // useful for tabs, accordions, sliders
-      new \Twig_SimpleFilter('flattenfield', [$this, 'flattenField']),
+      new TwigFilter('flattenfield', [$this, 'flattenField']),
        // retheme a field value
-      new \Twig_SimpleFilter('retheme', [$this, 'reTheme']),
+      new TwigFilter('retheme', [$this, 'reTheme']),
       // retheme a field value
-      new \Twig_SimpleFilter('refilter', [$this, 'reFilter']),
+      new TwigFilter('refilter', [$this, 'reFilter']),
       // render a text field from the fielditem
-      new \Twig_SimpleFilter('text_format', [$this, 'textFormat']),
+      new TwigFilter('text_format', [$this, 'textFormat']),
       // create a superheading by taking the last word and making it larger
-      new \Twig_SimpleFilter('multilinesuperhead', [$this, 'multilineSuperhead']),
+      new TwigFilter('multilinesuperhead', [$this, 'multilineSuperhead']),
       // override a view with custom referenced content
-      new \Twig_SimpleFilter('override_eva_with', [$this, 'overrideEva']),
+      new TwigFilter('override_eva_with', [$this, 'overrideEva']),
     ];
   }
 

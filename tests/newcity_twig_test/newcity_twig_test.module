@@ -29,7 +29,7 @@ function newcity_twig_test_theme() {
  * Implements hook_theme_registry_alter().
  */
 function newcity_twig_test_theme_registry_alter(&$theme_registry) {
-  $theme_registry['node']['path'] = drupal_get_path('module', 'newcity_twig_test') . '/templates';
+  $theme_registry['node']['path'] = \Drupal::service('extension.list.module')->getPath('newcity_twig_test') . '/templates';
 }
 
 /**
