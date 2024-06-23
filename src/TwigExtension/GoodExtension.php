@@ -157,6 +157,9 @@ class GoodExtension extends AbstractExtension {
    */
   public function viewHasRows($view, $class = 'views-row') {
     $view = $this->removeHtmlComments($view);
+    if (empty($view)) {
+      return FALSE;
+    }
     $dom = new \DOMDocument();
 
     // load HTML but suppress warnings
